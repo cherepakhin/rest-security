@@ -1,27 +1,30 @@
 package ru.perm.v.restsecurity.model;
 
+import static javax.persistence.GenerationType.IDENTITY;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
 @Entity
-public class Account {
-
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+public class Account implements Serializable {
 	@Id
-	@GeneratedValue
+	@GeneratedValue(strategy = IDENTITY)
 	private Long id;
 
 	private String username = "";
-
 	@JsonIgnore
 	private String password = "";
-
-	@OneToMany(mappedBy = "account")
-	private Set<Bookmark> bookmarks = new HashSet();
+	@OneToMany(mappedBy = "account", fetch = FetchType.EAGER)
+	private Set<Bookmark> bookmarks = new HashSet<>();
 
 	public Account() {
 		// Для jpa
