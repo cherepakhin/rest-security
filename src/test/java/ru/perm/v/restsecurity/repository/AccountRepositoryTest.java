@@ -1,34 +1,37 @@
 package ru.perm.v.restsecurity.repository;
 
+import static junit.framework.TestCase.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+import javax.transaction.Transactional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import ru.perm.v.restsecurity.model.Account;
 
 @SpringBootTest
+@Transactional
 public class AccountRepositoryTest {
+
+	final String USERNAME = "NAME_1";
+	final String PASSWORD = "PASSWORD_1";
 	@Autowired
 	AccountRepository accountRepository;
-
-	private Long ID=1L;
-	final String USERNAME = "USERNAME";
-	final String PASSWORD = "PASSWORD";
+	private Long ID = 1L;
 
 	@Test
 	public void createAccount() {
-		Account account = new Account(USERNAME, PASSWORD);
+		Account account = new Account(USERNAME + "TEST", PASSWORD);
 		Account createdAccount = accountRepository.save(account);
-		assertEquals(createdAccount.getUsername(), USERNAME);
+		assertEquals(createdAccount.getUsername(), USERNAME + "TEST");
 		assertEquals(createdAccount.getPassword(), PASSWORD);
-		assertEquals(createdAccount.getId(),ID);
+		assertTrue(createdAccount.getId() > 0);
 	}
 
 	@Test
 	public void findByIdTest() {
-		Account account = accountRepository.save(new Account(USERNAME, PASSWORD));
+		Account account = accountRepository.getOne(ID);
 		assertNotNull(account);
 		assertEquals(account.getUsername(), USERNAME);
 		assertEquals(account.getPassword(), PASSWORD);
@@ -36,9 +39,9 @@ public class AccountRepositoryTest {
 
 	@Test
 	public void findByUsername() {
-		Account account = accountRepository.save(new Account(USERNAME, PASSWORD));
+		Account account = accountRepository.findByUsername(USERNAME).get();
 		assertNotNull(account);
-		account=accountRepository.findByUsername(USERNAME).get();
+		assertEquals(account.getId(), ID);
 		assertEquals(account.getUsername(), USERNAME);
 		assertEquals(account.getPassword(), PASSWORD);
 	}

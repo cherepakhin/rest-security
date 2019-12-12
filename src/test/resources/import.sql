@@ -1,0 +1,1 @@
+insert into account(id,username,password) values(1,'NAME_1','PASSWORD_1'),(2,'NAME_2','PASSWORD_2');
