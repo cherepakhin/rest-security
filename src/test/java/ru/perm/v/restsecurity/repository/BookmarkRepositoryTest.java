@@ -3,13 +3,19 @@ package ru.perm.v.restsecurity.repository;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-import org.junit.jupiter.api.Test;
+import javax.transaction.Transactional;
+import org.junit.Test;
+
+import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit4.SpringRunner;
 import ru.perm.v.restsecurity.model.Account;
 import ru.perm.v.restsecurity.model.Bookmark;
 
+@RunWith(SpringRunner.class)
 @SpringBootTest
+@Transactional
 public class BookmarkRepositoryTest {
 
 	final String USERNAME = "USERNAME";
@@ -24,7 +30,7 @@ public class BookmarkRepositoryTest {
 	BookmarkRepository bookmarkRepository;
 
 	@Test
-	void createTest() {
+	public void createTest() {
 		Account account = accountRepository.save(new Account(USERNAME, PASSWORD));
 		Bookmark bookmark = bookmarkRepository.save(new Bookmark(account, URI, DESCRIPTION));
 		assertNotNull(bookmark);
