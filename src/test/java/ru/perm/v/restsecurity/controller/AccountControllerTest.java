@@ -70,7 +70,7 @@ public class AccountControllerTest {
 				.andDo(print())
 				.andExpect(status().isOk())
 				.andExpect(content().contentType(contentType))
-				.andExpect(jsonPath("$", hasSize(2)));
+				.andExpect(jsonPath("$.accounts", hasSize(2)));
 	}
 
 	@Test

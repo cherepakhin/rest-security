@@ -33,8 +33,8 @@ public class AccountController {
 	}
 
 	@GetMapping(value = "")
-	public List<Account> getAll() {
-		return accountRepository.findAll(Sort.by("username"));
+	public Accounts getAll() {
+		return new Accounts(accountRepository.findAll(Sort.by("username")));
 	}
 
 	@PutMapping(value = "")
