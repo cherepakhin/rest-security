@@ -1,9 +1,7 @@
 package ru.perm.v.restsecurity.secutity;
 
-import java.io.IOException;
 import java.util.Collections;
 import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
@@ -30,8 +28,9 @@ public class JWTLoginFilter extends AbstractAuthenticationProcessingFilter {
 			throws AuthenticationException {
 		String username = request.getParameter("username");
 		String password = request.getParameter("password");
-		logger.info(String.format("JWTLoginFilter.attemptAuthentication: username/password= %s,%s", username,
-						password));
+		logger.info(String.format("JWTLoginFilter.attemptAuthentication: username/password= %s,%s",
+				username,
+				password));
 		return getAuthenticationManager()
 				.authenticate(
 						new UsernamePasswordAuthenticationToken(username, password, Collections
@@ -43,8 +42,8 @@ public class JWTLoginFilter extends AbstractAuthenticationProcessingFilter {
 			HttpServletResponse response, FilterChain chain,
 			Authentication authResult) {
 		logger.info("JWTLoginFilter.successfulAuthentication:");
-		logger.info("authResult.getName():"+authResult.getName());
-		logger.info("authResult.getPrincipal():"+authResult.getPrincipal());
+		logger.info("authResult.getName():" + authResult.getName());
+		logger.info("authResult.getPrincipal():" + authResult.getPrincipal());
 		// Write Authorization to Headers of Response.
 		TokenAuthenticationService.addAuthentication(response, authResult.getName());
 		String authorizationString = response.getHeader("Authorization");

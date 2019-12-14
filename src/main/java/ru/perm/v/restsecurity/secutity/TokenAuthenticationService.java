@@ -1,16 +1,13 @@
 package ru.perm.v.restsecurity.secutity;
 
-import java.util.Collections;
-import java.util.Date;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import java.util.Collections;
+import java.util.Date;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 
 public class TokenAuthenticationService {
 
@@ -33,10 +30,12 @@ public class TokenAuthenticationService {
 		String token = request.getHeader(HEADER_STRING);
 		if (token != null) {
 			// parse the token.
-			String user = Jwts.parser().setSigningKey(SECRET).parseClaimsJws(token.replace(TOKEN_PREFIX, "")).getBody()
+			String user = Jwts.parser().setSigningKey(SECRET)
+					.parseClaimsJws(token.replace(TOKEN_PREFIX, "")).getBody()
 					.getSubject();
 
-			return user != null ? new UsernamePasswordAuthenticationToken(user, null, Collections.emptyList()) : null;
+			return user != null ? new UsernamePasswordAuthenticationToken(user, null,
+					Collections.emptyList()) : null;
 		}
 		return null;
 	}
