@@ -13,8 +13,6 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.perm.v.restsecurity.model.Account;
 import ru.perm.v.restsecurity.repository.AccountRepository;
 
-//import org.springframework.hateoas.;
-
 @RestController
 @RequestMapping("/account")
 public class AccountController {
