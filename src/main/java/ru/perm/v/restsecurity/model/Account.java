@@ -8,7 +8,6 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
@@ -16,6 +15,7 @@ import javax.persistence.OneToMany;
 @Entity
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Account implements Serializable {
+
 	@Id
 	@GeneratedValue(strategy = IDENTITY)
 	private Long id;
@@ -23,7 +23,7 @@ public class Account implements Serializable {
 	private String username = "";
 	@JsonIgnore
 	private String password = "";
-	@OneToMany(mappedBy = "account", fetch = FetchType.EAGER)
+	@OneToMany(mappedBy = "account")
 	private Set<Bookmark> bookmarks = new HashSet<>();
 
 	public Account() {

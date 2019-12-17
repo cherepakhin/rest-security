@@ -19,10 +19,18 @@ public class JWTAuthenticationFilter extends GenericFilterBean {
 	@Override
 	public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse,
 			FilterChain filterChain) throws IOException, ServletException {
-		logger.info("JWTAuthenticationFilter.doFilter");
+		// Получение объекта Authentication (с именем пользователя, ролями и.т.п)
+		// по токену из request
 		Authentication authentication = TokenAuthenticationService
 				.getAuthentication((HttpServletRequest) servletRequest);
+		logger.info("Authentication:" + authentication);
+		logger.info(
+				"SecurityContextHolder.getContext() before:" + SecurityContextHolder.getContext());
+		// Привязка объекта Authentication к статическому SecurityContextHolder
 		SecurityContextHolder.getContext().setAuthentication(authentication);
+		logger.info(
+				"SecurityContextHolder.getContext() after:" + SecurityContextHolder.getContext());
+		// Отправка текущего request для следующих фильтров
 		filterChain.doFilter(servletRequest, servletResponse);
 	}
 

@@ -8,7 +8,9 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.authentication.configurers.provisioning.InMemoryUserDetailsManagerConfigurer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -21,6 +23,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
  * 'Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJqZXJyeSIsImV4cCI6MTU3NzE4ODc0NH0.8B5exq1eYKilvIGauWoa6lz9ubzE4p4QQSTIWSZ9RoTk2ADkSNtt1LGUszrsQA0gKoFQBtXt7k_gfmQ4jGExXA'
  */
 @Configuration
+@EnableWebSecurity
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
 	private final Logger logger = LoggerFactory.getLogger(SecurityConfiguration.class);
@@ -29,24 +32,44 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 	protected void configure(
 			HttpSecurity http) throws Exception {
 		http.csrf().disable().authorizeRequests()
-				// No need authentication.
-				.antMatchers("/").permitAll() //
+
+				.antMatchers("/").permitAll()
+
 				.antMatchers(HttpMethod.POST, "/login").permitAll() //
+				.antMatchers(HttpMethod.GET, "/error").permitAll() //
 				.antMatchers(HttpMethod.GET, "/login").permitAll() // For Test on Browser
-				// Need authentication.
-				.anyRequest().authenticated()
+//				.antMatchers(HttpMethod.PUT, "/account").permitAll()
+
+				// Только роль USER_2 имеет доступ с /account
+				.antMatchers(HttpMethod.GET, "/account")
+				.hasRole("USER_2")
+
+				// К /account/1 могут обращаться все
+				.antMatchers("/account/1").permitAll()
+
+				// Все остальные запросы должны быть аутетифицированы
+				.anyRequest()
+				.authenticated()
+
+				// Убрал создание куки для сессии
+				.and()
+				.sessionManagement()
+				.sessionCreationPolicy(SessionCreationPolicy.NEVER)
+
 				//
 				.and()
 				//
-				// Add Filter 1 - JWTLoginFilter
+				// Получение токена по пути /login
 				//
 				.addFilterBefore(new JWTLoginFilter("/login", authenticationManager()),
 						UsernamePasswordAuthenticationFilter.class)
 				//
-				// Add Filter 2 - JWTAuthenticationFilter
+				// Извлечение токена из запросов и добавление Authentication
+				// в SecurityContextHolder
 				//
 				.addFilterBefore(new JWTAuthenticationFilter(),
-						UsernamePasswordAuthenticationFilter.class);
+						UsernamePasswordAuthenticationFilter.class)
+		;
 	}
 
 	@Bean
@@ -59,6 +82,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 		String password = "123";
 		String encrytedPassword = this.passwordEncoder().encode(password);
 		logger.info("Encoded password of 123=" + encrytedPassword);
+		// Конфигурация сохраняется в памяти. Как работать с ним не узнал.
+		// Можно хранить в JDBC,LDAP, настриваемых хранилищах
 		InMemoryUserDetailsManagerConfigurer<AuthenticationManagerBuilder> //
 				mngConfig = auth.inMemoryAuthentication();
 		// Defines 2 users, stored in memory.
@@ -68,6 +93,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 				.build();
 		UserDetails u2 = User.withUsername("jerry").password(encrytedPassword).roles("USER_2")
 				.build();
+		logger.info("USER_1:" + u1);
 		mngConfig.withUser(u1);
 		mngConfig.withUser(u2);
 	}

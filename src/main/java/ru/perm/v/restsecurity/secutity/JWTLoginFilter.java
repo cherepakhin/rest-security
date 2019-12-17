@@ -26,6 +26,8 @@ public class JWTLoginFilter extends AbstractAuthenticationProcessingFilter {
 	public Authentication attemptAuthentication(HttpServletRequest request,
 			HttpServletResponse response)
 			throws AuthenticationException {
+		// Поля username и password д.б. определены
+		// либо в теле POST запроса, либо в параметрах GET-запроса
 		String username = request.getParameter("username");
 		String password = request.getParameter("password");
 		logger.info(String.format("JWTLoginFilter.attemptAuthentication: username/password= %s,%s",
@@ -33,8 +35,8 @@ public class JWTLoginFilter extends AbstractAuthenticationProcessingFilter {
 				password));
 		return getAuthenticationManager()
 				.authenticate(
-						new UsernamePasswordAuthenticationToken(username, password, Collections
-								.emptyList()));
+						new UsernamePasswordAuthenticationToken(username, password,
+								Collections.emptyList()));
 	}
 
 	@Override
@@ -44,7 +46,7 @@ public class JWTLoginFilter extends AbstractAuthenticationProcessingFilter {
 		logger.info("JWTLoginFilter.successfulAuthentication:");
 		logger.info("authResult.getName():" + authResult.getName());
 		logger.info("authResult.getPrincipal():" + authResult.getPrincipal());
-		// Write Authorization to Headers of Response.
+		// Запись токена в headers
 		TokenAuthenticationService.addAuthentication(response, authResult.getName());
 		String authorizationString = response.getHeader("Authorization");
 		logger.info("Authorization String=" + authorizationString);

@@ -1,0 +1,1 @@
+http GET :8080/account/$1 'Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJqZXJyeSIsImV4cCI6MTU3NzQyOTI1NX0.a78Iqs8TuO9gpubtZpDRuQrom2WoGZyjxQzXNgF7xT2yOgnbezTqxAgqsGOmowp0ARfI4Y-BeVF17rmuQq-cOg'
