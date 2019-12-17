@@ -38,7 +38,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 				.antMatchers(HttpMethod.POST, "/login").permitAll() //
 				.antMatchers(HttpMethod.GET, "/error").permitAll() //
 				.antMatchers(HttpMethod.GET, "/login").permitAll() // For Test on Browser
-//				.antMatchers(HttpMethod.PUT, "/account").permitAll()
+				// Позволяю всем регистрироваться
+				// Проверка: http -j PUT :8080/account username=aaa password=ppp
+				.antMatchers(HttpMethod.PUT, "/account").permitAll()
 
 				// Только роль USER_2 имеет доступ с /account
 				.antMatchers(HttpMethod.GET, "/account")
@@ -67,7 +69,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 				// Извлечение токена из запросов и добавление Authentication
 				// в SecurityContextHolder
 				//
-				.addFilterBefore(new JWTAuthenticationFilter(),
+				.addFilterBefore(new JWTAuthorizationFilter(authenticationManager()),
 						UsernamePasswordAuthenticationFilter.class)
 		;
 	}

@@ -1,8 +1,9 @@
 package ru.perm.v.restsecurity.secutity;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import static ru.perm.v.restsecurity.secutity.SecurityConstants.*;
+
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.algorithms.Algorithm;
 import java.util.Arrays;
 import java.util.Date;
 import javax.servlet.http.HttpServletRequest;
@@ -19,21 +20,17 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
  */
 public class TokenAuthenticationService {
 
-	// Срок жизни
-	static final long EXPIRATIONTIME = 864_000_000; // 10 days
-	// Секретная фраза для шифрования
-	static final String SECRET = "ThisIsASecret";
-	// Префикс для токена.
-	static final String TOKEN_PREFIX = "Bearer";
-	static final String HEADER_STRING = "Authorization";
 	private final static Logger logger = LoggerFactory.getLogger(TokenAuthenticationService.class);
 
 	public static void addAuthentication(HttpServletResponse res, String username) {
 		// Установка в токене поля subject: равным имени пользователя
-		String JWT = Jwts.builder().setSubject(username)
-				.setExpiration(new Date(System.currentTimeMillis() + EXPIRATIONTIME))
-				.signWith(SignatureAlgorithm.HS512, SECRET).compact();
-		res.addHeader(HEADER_STRING, TOKEN_PREFIX + " " + JWT);
+		// Использована другая зависимость в pom.xml "com.auth0:java-jwt:3.4.0"
+		String token = JWT
+				.create()
+				.withSubject(username)
+				.withExpiresAt(new Date(System.currentTimeMillis() + EXPIRATIONTIME))
+				.sign(Algorithm.HMAC512(SECRET.getBytes()));
+		res.addHeader(HEADER_STRING, TOKEN_PREFIX + token);
 	}
 
 	/**
@@ -43,7 +40,7 @@ public class TokenAuthenticationService {
 	 * @param request - http запрос
 	 * @return - объект Authentication для SpringContextHolder
 	 */
-	public static Authentication getAuthentication(HttpServletRequest request) {
+	public static UsernamePasswordAuthenticationToken getAuthentication(HttpServletRequest request) {
 		String token = request.getHeader(HEADER_STRING);
 		logger.info("Token:" + token);
 		// Если нет строки "Authorization", то будет переход по пути /error
@@ -51,25 +48,24 @@ public class TokenAuthenticationService {
 		// для обработки пути /error
 		if (token != null) {
 			// Извлечение из request раздела headers
-			Claims body = Jwts.parser().setSigningKey(SECRET)
-					.parseClaimsJws(token.replace(TOKEN_PREFIX, "")).getBody();
 			// Из поля subject достаю имя пользователя
-			String user = body
+			String user = JWT.require(Algorithm.HMAC512(SECRET.getBytes()))
+					.build()
+					.verify(token.replace(TOKEN_PREFIX, ""))
 					.getSubject();
-			logger.info("Body:" + body);
-			// ХАК для примера. Генерю роли для пользователя.
-			// В обычной системе их нужно доставать из базы
-			GrantedAuthority role_user_1 = new SimpleGrantedAuthority("ROLE_USER_1");
-			GrantedAuthority role_user_2 = new SimpleGrantedAuthority("ROLE_USER_2");
-			// Назначаю РОЛИ пользователю из токена
-			UsernamePasswordAuthenticationToken u =
-					user != null ? new UsernamePasswordAuthenticationToken(user, "123",
-							Arrays.asList(role_user_1, role_user_2)) : null;
-//			logger.info("GrantedAuthority:" + role_user_2);
-//			logger.info("User:" + u);
-//			logger.info("User Credential:" + u.getCredentials());
-//			logger.info("User Autorities:" + u.getAuthorities());
-			return u;
+			logger.info("Body:" + user);
+			if (user != null) {
+				// ХАК для примера. Генерю роли для пользователя.
+				// В обычной системе их нужно доставать из базы
+
+				GrantedAuthority role_user_1 = new SimpleGrantedAuthority("ROLE_USER_1");
+				GrantedAuthority role_user_2 = new SimpleGrantedAuthority("ROLE_USER_2");
+				// Назначаю РОЛИ пользователю из токена
+				return user != null ? new UsernamePasswordAuthenticationToken(user, "123",
+						Arrays.asList(role_user_1, role_user_2)) : null;
+			}
+			return null;
+
 		}
 		return null;
 	}

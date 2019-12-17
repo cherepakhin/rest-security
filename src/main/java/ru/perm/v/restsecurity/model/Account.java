@@ -2,7 +2,6 @@ package ru.perm.v.restsecurity.model;
 
 import static javax.persistence.GenerationType.IDENTITY;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.io.Serializable;
 import java.util.HashSet;
@@ -21,7 +20,7 @@ public class Account implements Serializable {
 	private Long id;
 
 	private String username = "";
-	@JsonIgnore
+	//	@JsonIgnore
 	private String password = "";
 	@OneToMany(mappedBy = "account")
 	private Set<Bookmark> bookmarks = new HashSet<>();

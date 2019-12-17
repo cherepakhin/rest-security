@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -23,6 +24,8 @@ public class AccountController {
 
 	@Autowired
 	private AccountRepository accountRepository;
+	@Autowired
+	BCryptPasswordEncoder passwordEncoder;
 
 	@GetMapping(value = "/{id}")
 	public Account getById(@PathVariable Long id) {
@@ -43,6 +46,9 @@ public class AccountController {
 
 	@PutMapping(value = "")
 	public Account create(@RequestBody Account account) {
+		// Кодирую пароль
+		logger.debug("PUT account:" + account);
+		account.setPassword(passwordEncoder.encode(account.getPassword()));
 		return accountRepository.save(account);
 	}
 
