@@ -2,17 +2,15 @@ package ru.perm.v.restsecurity.secutity;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.config.annotation.authentication.configurers.provisioning.InMemoryUserDetailsManagerConfigurer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -27,6 +25,9 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
 	private final Logger logger = LoggerFactory.getLogger(SecurityConfiguration.class);
+
+	@Autowired
+	private UserDetailsServiceImpl userDetailsService;
 
 	@Override
 	protected void configure(
@@ -81,23 +82,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
 	@Override
 	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-		String password = "123";
-		String encrytedPassword = this.passwordEncoder().encode(password);
-		logger.info("Encoded password of 123=" + encrytedPassword);
-		// Конфигурация сохраняется в памяти. Как работать с ним не узнал.
-		// Можно хранить в JDBC,LDAP, настриваемых хранилищах
-		InMemoryUserDetailsManagerConfigurer<AuthenticationManagerBuilder> //
-				mngConfig = auth.inMemoryAuthentication();
-		// Defines 2 users, stored in memory.
-		// ** Spring BOOT >= 2.x (Spring Security 5.x)
-		// Spring auto add ROLE_
-		UserDetails u1 = User.withUsername("tom").password(encrytedPassword).roles("USER_1")
-				.build();
-		UserDetails u2 = User.withUsername("jerry").password(encrytedPassword).roles("USER_2")
-				.build();
-		logger.info("USER_1:" + u1);
-		mngConfig.withUser(u1);
-		mngConfig.withUser(u2);
+		auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
 	}
 }
 
