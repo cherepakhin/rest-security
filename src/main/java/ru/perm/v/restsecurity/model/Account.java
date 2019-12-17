@@ -10,8 +10,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
 
 @Entity
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
@@ -27,13 +25,17 @@ public class Account implements Serializable {
 	@OneToMany(mappedBy = "account")
 	private Set<Bookmark> bookmarks = new HashSet<>();
 
+	// Роли через запятую. Должны начинаться с ROLE_
+	private String role = "";
+
 	public Account() {
 		// Для jpa
 	}
 
-	public Account(String username, String password) {
+	public Account(String username, String password, String _role) {
 		this.username = username;
 		this.password = password;
+		this.role = (_role == null ? "" : _role);
 	}
 
 	public Long getId() {
@@ -74,6 +76,18 @@ public class Account implements Serializable {
 
 	public void delBookMark(Bookmark bookmark) {
 		bookmarks.remove(bookmark);
+	}
+
+	public String getRole() {
+		return role;
+	}
+
+	public void setRole(String role) {
+		this.role = role;
+	}
+
+	public String[] getArrayRole() {
+		return role.replaceAll(" ", "").split(",");
 	}
 
 	@Override

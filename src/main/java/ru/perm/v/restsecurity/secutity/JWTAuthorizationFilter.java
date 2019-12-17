@@ -10,8 +10,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
@@ -22,9 +24,11 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
 
 	private final Logger logger = LoggerFactory.getLogger(JWTAuthorizationFilter.class);
+	UserDetailsServiceImpl userDetailsService;
 
-	public JWTAuthorizationFilter(AuthenticationManager authenticationManager) {
+	public JWTAuthorizationFilter(AuthenticationManager authenticationManager,UserDetailsServiceImpl userDetailsService) {
 		super(authenticationManager);
+		this.userDetailsService=userDetailsService;
 	}
 
 	@Override
@@ -37,8 +41,8 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
 		}
 		// Получение объекта Authentication (с именем пользователя, ролями и.т.п)
 		// по токену из request
-		UsernamePasswordAuthenticationToken authentication = TokenAuthenticationService
-				.getAuthentication(request);
+		Authentication authentication = TokenAuthenticationService
+				.getAuthentication(request,userDetailsService);
 		// Привязка объекта Authentication к статическому SecurityContextHolder
 		SecurityContextHolder.getContext().setAuthentication(authentication);
 		logger.info(

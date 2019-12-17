@@ -21,18 +21,17 @@ import ru.perm.v.restsecurity.repository.AccountRepository;
 public class AccountController {
 
 	private final Logger logger = LoggerFactory.getLogger(AccountController.class);
-
-	@Autowired
-	private AccountRepository accountRepository;
 	@Autowired
 	BCryptPasswordEncoder passwordEncoder;
+	@Autowired
+	private AccountRepository accountRepository;
 
 	@GetMapping(value = "/{id}")
 	public Account getById(@PathVariable Long id) {
 		validate(id);
 		logger.info(String.format("ID=%d", id));
 		Account account = accountRepository.getOne(id);
-		System.out.println(account);
+		logger.debug("/{id}" + account);
 		return account;
 	}
 

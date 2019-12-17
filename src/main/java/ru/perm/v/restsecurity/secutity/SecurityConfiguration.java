@@ -4,7 +4,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -20,7 +19,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
  * POST :8080/login username="jerry" password="123" Использование JWT токена http :8080/account
  * 'Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJqZXJyeSIsImV4cCI6MTU3NzE4ODc0NH0.8B5exq1eYKilvIGauWoa6lz9ubzE4p4QQSTIWSZ9RoTk2ADkSNtt1LGUszrsQA0gKoFQBtXt7k_gfmQ4jGExXA'
  */
-@Configuration
+//@Configuration
 @EnableWebSecurity
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
@@ -70,7 +69,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 				// Извлечение токена из запросов и добавление Authentication
 				// в SecurityContextHolder
 				//
-				.addFilterBefore(new JWTAuthorizationFilter(authenticationManager()),
+				.addFilterBefore(new JWTAuthorizationFilter(authenticationManager(),userDetailsService),
 						UsernamePasswordAuthenticationFilter.class)
 		;
 	}

@@ -27,7 +27,7 @@ public class AccountRepositoryTest {
 
 	@Test
 	public void createAccount() {
-		Account account = new Account(USERNAME + "TEST", PASSWORD);
+		Account account = new Account(USERNAME + "TEST", PASSWORD,"");
 		Account createdAccount = accountRepository.save(account);
 		assertEquals(createdAccount.getUsername(), USERNAME + "TEST");
 		assertEquals(createdAccount.getPassword(), PASSWORD);

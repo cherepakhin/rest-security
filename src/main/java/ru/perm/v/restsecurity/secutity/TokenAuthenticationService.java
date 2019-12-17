@@ -1,19 +1,19 @@
 package ru.perm.v.restsecurity.secutity;
 
-import static ru.perm.v.restsecurity.secutity.SecurityConstants.*;
+import static ru.perm.v.restsecurity.secutity.SecurityConstants.EXPIRATIONTIME;
+import static ru.perm.v.restsecurity.secutity.SecurityConstants.HEADER_STRING;
+import static ru.perm.v.restsecurity.secutity.SecurityConstants.SECRET;
+import static ru.perm.v.restsecurity.secutity.SecurityConstants.TOKEN_PREFIX;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
-import java.util.Arrays;
 import java.util.Date;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 /**
  * Генерация и проверка токена
@@ -37,10 +37,13 @@ public class TokenAuthenticationService {
 	 * Формирование объекта Authentication для SpringContextHolder. Из статического
 	 * SpringContextHolder всегда можно достать Authentication, а следовательно и имя пользователя
 	 *
-	 * @param request - http запрос
+	 * @param request            - http запрос
+	 * @param userDetailsService - сервис пользователей
 	 * @return - объект Authentication для SpringContextHolder
 	 */
-	public static UsernamePasswordAuthenticationToken getAuthentication(HttpServletRequest request) {
+	public static UsernamePasswordAuthenticationToken getAuthentication(
+			HttpServletRequest request,
+			UserDetailsServiceImpl userDetailsService) {
 		String token = request.getHeader(HEADER_STRING);
 		logger.info("Token:" + token);
 		// Если нет строки "Authorization", то будет переход по пути /error
@@ -57,12 +60,16 @@ public class TokenAuthenticationService {
 			if (user != null) {
 				// ХАК для примера. Генерю роли для пользователя.
 				// В обычной системе их нужно доставать из базы
-
-				GrantedAuthority role_user_1 = new SimpleGrantedAuthority("ROLE_USER_1");
-				GrantedAuthority role_user_2 = new SimpleGrantedAuthority("ROLE_USER_2");
+				UserDetails userDetails = userDetailsService
+						.loadUserByUsername(user);
+//				GrantedAuthority role_user_1 = new SimpleGrantedAuthority("ROLE_USER_1");
+//				GrantedAuthority role_user_2 = new SimpleGrantedAuthority("ROLE_USER_2");
 				// Назначаю РОЛИ пользователю из токена
-				return user != null ? new UsernamePasswordAuthenticationToken(user, "123",
-						Arrays.asList(role_user_1, role_user_2)) : null;
+				logger.debug("SET ROLES" + userDetails);
+				return new UsernamePasswordAuthenticationToken(
+						userDetails.getUsername(),
+						userDetails.getPassword(),
+						userDetails.getAuthorities());
 			}
 			return null;
 

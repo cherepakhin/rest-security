@@ -1,4 +1,5 @@
 {
     "username": "anna",
-    "password": "pass"
+    "password": "pass",
+    "role": "ROLE_USER_3,ROLE_USER_2"
 }

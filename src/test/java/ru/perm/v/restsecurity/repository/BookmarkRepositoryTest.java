@@ -31,7 +31,7 @@ public class BookmarkRepositoryTest {
 
 	@Test
 	public void createTest() {
-		Account account = accountRepository.save(new Account(USERNAME, PASSWORD));
+		Account account = accountRepository.save(new Account(USERNAME, PASSWORD,""));
 		Bookmark bookmark = bookmarkRepository.save(new Bookmark(account, URI, DESCRIPTION));
 		assertNotNull(bookmark);
 		assertEquals(bookmark.getUri(), URI);

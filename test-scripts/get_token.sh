@@ -1,1 +1,1 @@
-http -f PUT :8080/login username="anna" password="pass"
+http -f PUT :8080/login username="vasi" password="pass"

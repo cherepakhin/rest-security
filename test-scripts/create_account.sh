@@ -1,1 +1,1 @@
-http PUT :8080/account < anna.json
+http PUT :8080/account < vasi.json
