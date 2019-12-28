@@ -30,6 +30,7 @@ public class TokenAuthenticationService {
 				.withSubject(username)
 				.withExpiresAt(new Date(System.currentTimeMillis() + EXPIRATIONTIME))
 				.sign(Algorithm.HMAC512(SECRET.getBytes()));
+		logger.info("Token:" + token);
 		res.addHeader(HEADER_STRING, TOKEN_PREFIX + token);
 	}
 

@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.perm.v.restsecurity.model.Account;
 import ru.perm.v.restsecurity.repository.AccountRepository;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/account")
 public class AccountController {

@@ -12,6 +12,6 @@ public class ErrorController {
 
 	@GetMapping
 	public ResponseEntity<String> getDefault() {
-		return new ResponseEntity<>("Не зарегистрирован", HttpStatus.OK);
+		return new ResponseEntity<>("Нет доступа", HttpStatus.FORBIDDEN);
 	}
 }

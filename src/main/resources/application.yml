@@ -1,0 +1,23 @@
+# дДоступ к интерфейсу для работы с H2 через /h2-console
+spring:
+  h2:
+    console:
+      enabled: true
+
+  jpa:
+    open-in-view: true
+  jackson:
+    serialization:
+      FAIL_ON_EMPTY_BEANS: false
+
+logging:
+  level:
+    org.hibernate.SQL: debug
+    ru.perm.v: debug
+
+#Настройка актуаторов
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,env, beans
